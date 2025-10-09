@@ -6,7 +6,7 @@ This project implements a federated learning-based intrusion detection system (I
 - ECU-IoHT  https://ro.ecu.edu.au/datasets/48/
 # Citation
 
-Fatemeh Mosaiyebzadeh, Seyedamin Pouriyeh, Meng Han, Liyuan Liu, Yixin Xie, Liang Zhao, Daniel Macêdo Batista. Privacy-Preserving Federated Learning-Based Intrusion Detection System for IoHT Devices 
+Fatemeh Mosaiyebzadeh, Seyedamin Pouriyeh, Meng Han, Liyuan Liu, Yixin Xie, Liang Zhao, Daniel Macêdo Batista. Privacy-Preserving Federated Learning-Based Intrusion Detection System for IoHT Devices
 https://www.mdpi.com/2079-9292/14/1/67
 
 # Algorithms Used
