@@ -29,7 +29,8 @@ pytest-cov>=2.12.0
 black>=21.0
 flake8>=3.9.0
 mypy>=0.910
-isort>=5.9.0pytest>=6.2.0
+isort>=5.9.0
+pytest>=6.2.0
 pytest-cov>=2.12.0
 pytest-mock>=3.6.0
 pre-commit>=2.15.0
