@@ -5,20 +5,8 @@ __pycache__/
 *.so
 .Python
 build/
-develop-eggs/
 dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
 *.egg-info/
-.installed.cfg
-*.egg
 MANIFEST
 
 # Virtual Environment
@@ -26,45 +14,39 @@ venv/
 env/
 ENV/
 
-# PyCharm
+# Editors / OS
 .idea/
-
-# VS Code
 .vscode/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
 
 # Jupyter
 .ipynb_checkpoints
 
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
-*.cover
-.hypothesis/
+# Raw datasets -- not committed (size + redistribution license concerns).
+# Re-download from the sources in README.md and place directly in our_work/
+# before running the notebook.
+our_work/*.csv
+our_work/*.xlsx
 
-# Logs
-logs/
-*.log
+# Generated/regenerable artifacts from running the notebook -- reproducible
+# from source + the raw datasets above, not meant to be committed.
+our_work/*.npy
+our_work/*.pt
+our_work/*.pth
+our_work/*.png
 
-# Data
-data/raw/*.csv
-data/processed/
-
-# Models & Results
-results/*/
-!results/.gitkeep
-*.pt
-*.pth
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Temporary
-*.swp
-*.swo
-*~
-.tmp/
-
-# MyPy
-.mypy_cache/
+# Original scaffold project (src/, tests/, CI, tooling configs, the paper
+# authors' raw notebook) -- intentionally not part of this repo going
+# forward. Recoverable from git history (see README.md) if ever needed.
+src/
+tests/
+FL-DP-WUSTL.ipynb
+requirements.txt
+pytest.ini
+.flake8
+.isortrc
+.pre-commit-config.yaml
