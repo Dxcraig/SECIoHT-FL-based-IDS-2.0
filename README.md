@@ -29,6 +29,10 @@ Neither dataset is committed to this repo (size, and possible redistribution res
 ```
 our_work/
   SECIoHT_FL_Preprocessing.ipynb   <- the actual working notebook (Stages 1-4, see below)
+docs/
+  01-preprocessing-methodology.md
+  02-model-building-methodology.md
+  03-federated-learning-and-privacy-methodology.md
 README.md
 .gitignore
 ```
@@ -38,6 +42,13 @@ That's it. This repo previously also contained a `src/` Python package (models/f
 ## What's been done so far
 
 Everything lives in one notebook, `our_work/SECIoHT_FL_Preprocessing.ipynb`, structured as four stages that build on each other in order. All decisions below were made deliberately and are also documented inline in the notebook's markdown cells, not just here.
+
+**For the full reasoning behind every deviation from the paper — not just the summary below — see the detailed methodology notes in [`docs/`](docs/):**
+- [`docs/01-preprocessing-methodology.md`](docs/01-preprocessing-methodology.md) — Stage 1
+- [`docs/02-model-building-methodology.md`](docs/02-model-building-methodology.md) — Stage 2
+- [`docs/03-federated-learning-and-privacy-methodology.md`](docs/03-federated-learning-and-privacy-methodology.md) — Stages 3–4
+
+Each includes a task log attributing the work per stage between the two of us (Sonpon Ye-shua Chief and Edem Doe Lawson).
 
 ### Stage 1 — Preprocessing
 
