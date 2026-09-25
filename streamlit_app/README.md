@@ -40,24 +40,45 @@ streamlit_app/
 
 ## 2. Quickstart Instructions
 
-### Step 1: Activate Virtual Environment
-Ensure your Python environment is activated:
+Run these commands from the repository root in PowerShell:
+
+### First-time setup
+
+Use Python 3.12 or 3.13 because the pinned PyTorch dependency may not be
+available for newer Python versions:
+
+```powershell
+py -3.12 -m venv .venv
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r streamlit_app/requirements.txt
+```
+
+If Python 3.12 is not installed, use `py -3.13` in the first command instead.
+
+### Start the app
+
 ```powershell
 .\.venv\Scripts\Activate.ps1
+python -m streamlit run streamlit_app/Home.py
 ```
 
-### Step 2: Install App Dependencies
-If not already installed, run:
-```powershell
-pip install -r streamlit_app/requirements.txt
-```
-
-### Step 3: Run the Application
-From the workspace root, execute:
-```powershell
-streamlit run streamlit_app/Home.py
-```
 Open `http://localhost:8501` in your browser.
+
+### Start on another port
+
+Use this when port 8501 is already occupied:
+
+```powershell
+python -m streamlit run streamlit_app/Home.py --server.port 8502
+```
+
+Then open `http://localhost:8502`.
+
+### Stop the app
+
+Press `Ctrl+C` in the terminal running Streamlit.
 
 ---
 
@@ -69,8 +90,27 @@ Open `http://localhost:8501` in your browser.
 2. **Live Edge IoHT Testbed**:
    Interactive sliders for patient vitals (Heart rate, SpO2, Temperature, Blood pressure) and network flow telemetry (Ports, Flow duration, Packets) with real-time classification alerts.
 
-3. **Federated Learning and Opacus DP Sandbox**:
-   Simulate decentralized model training across 3 simulated hospitals with configurable communication rounds, local epochs, and differential privacy noise multipliers (0.5 vs 1.5).
+3. **Federated Learning and Privacy Results**:
+   Review recorded FedAvg and Opacus results from the notebook. The app does not retrain or fabricate round-by-round curves; missing logs are marked as pending.
 
 4. **Explainable AI (SHAP)**:
    Waterfall plots and global feature rankings identify which physiological anomalies or packet characteristics triggered the intrusion alert.
+
+### Artifact contract
+
+Copy notebook outputs into `artifacts/models/` and `artifacts/results/`. The app
+prefers these notebook-produced files:
+
+```text
+models/dnn_centralized_wustl.pt
+models/dnn_federated_wustl.pt
+models/dnn_federated_dp_noise1_5_wustl.pt
+models/dnn_federated_dp_noise0_5_wustl.pt
+results/stage3_federated_vs_centralized_wustl.csv
+results/stage4_full_comparison_wustl.csv
+results/stage5_benchmark_evaluation.csv
+results/stage6_feature_importance.csv
+```
+
+Until those files are produced by Colab, bundled values are labeled as
+fallbacks rather than notebook results.

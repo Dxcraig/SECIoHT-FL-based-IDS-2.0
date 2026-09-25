@@ -17,6 +17,7 @@ if str(APP_DIR) not in sys.path:
 
 from components.sidebar import render_sidebar
 from src.config import RESULTS_DIR, DEFAULT_BENCHMARK_RESULTS
+from src.artifacts import result_path
 
 # Page Setup
 st.set_page_config(page_title="Benchmark Arena | SECIoHT-FL", layout="wide")
@@ -31,11 +32,31 @@ st.markdown(
 st.markdown("---")
 
 # Load Benchmark Table
-results_file = RESULTS_DIR / "stage4_full_comparison_wustl.csv"
-if results_file.exists():
+stage5_file = result_path("stage5")
+stage4_file = result_path("stage4")
+if stage5_file.exists():
+    results_file = stage5_file
     df_results = pd.read_csv(results_file)
+    results_source = "Notebook Stage 5 evaluation artifact"
+elif stage4_file.exists():
+    results_file = stage4_file
+    df_results = pd.read_csv(results_file)
+    results_source = "Bundled Stage 4 comparison artifact"
 else:
     df_results = pd.DataFrame(DEFAULT_BENCHMARK_RESULTS)
+    results_source = "Fallback reference table; no notebook result artifact found"
+
+st.caption(f"Data source: {results_source}.")
+
+# Stage 5 exports lowercase metric names; normalize them for this page.
+df_results = df_results.rename(columns={
+    "accuracy": "Accuracy",
+    "precision": "Precision",
+    "recall": "Recall",
+    "f1": "F1-Score",
+    "f1_score": "F1-Score",
+    "epsilon": "Privacy (Epsilon)",
+})
 
 # Format numerical columns
 format_cols = ["Accuracy", "Precision", "Recall", "F1-Score"]
@@ -86,63 +107,7 @@ with col_c2:
 st.markdown("---")
 
 # Confusion Matrix Explorer
-st.subheader("Interactive Confusion Matrix Simulator")
-selected_model = st.selectbox(
-    "Select Model Architecture for Detailed Confusion Matrix:",
-    df_results["Setting"].tolist()
+st.info(
+    "Confusion matrices are shown only when the notebook exports actual per-sample predictions. "
+    "The current repository contains aggregate metrics, so no synthetic confusion matrix is displayed."
 )
-
-# Realistic confusion matrix values derived from test split
-row_match = df_results[df_results["Setting"] == selected_model].iloc[0]
-acc_val = float(row_match["Accuracy"])
-rec_val = float(row_match["Recall"])
-
-total_test = 3264
-actual_attacks = 408
-actual_normal = 2856
-
-tp = int(actual_attacks * rec_val)
-fn = actual_attacks - tp
-fp = int((actual_attacks * (1.0 - float(row_match["Precision"]))) / max(0.01, float(row_match["Precision"])))
-fp = min(actual_normal - 10, max(20, fp))
-tn = actual_normal - fp
-
-cm = [[tn, fp], [fn, tp]]
-
-col_m1, col_m2 = st.columns([1, 1])
-
-with col_m1:
-    fig_cm = px.imshow(
-        cm,
-        text_auto=True,
-        labels=dict(x="Predicted Label", y="Actual Ground Truth", color="Count"),
-        x=["Normal (0)", "Attack (1)"],
-        y=["Normal (0)", "Attack (1)"],
-        color_continuous_scale="Blues",
-        title=f"Confusion Matrix: {selected_model}"
-    )
-    st.plotly_chart(fig_cm, use_container_width=True)
-
-with col_m2:
-    st.markdown("#### Detailed Classification Breakdown")
-    st.markdown(
-        f"""
-        - **True Negatives (TN)**: `{tn:,}` (Correctly identified normal patient flows)
-        - **False Positives (FP)**: `{fp:,}` (Normal flows falsely flagged as attacks)
-        - **False Negatives (FN)**: `{fn:,}` (Attacks missed by intrusion defense)
-        - **True Positives (TP)**: `{tp:,}` (Attacks correctly intercepted)
-        """
-    )
-    
-    st.markdown(
-        """
-        <div class="info-box">
-        <b>Why Centralized DNN outperforms CNN:</b><br/>
-        In Stage 2, Centralized DNN reached <b>87.7%</b> while CNN achieved <b>70.2%</b>.
-        WUSTL-EHMS-2020 features (biometrics, packet rates, ports) are tabular and unordered.
-        Unlike spatial images where adjacent pixels form edges, 1D convolution over tabular columns 
-        assumes an arbitrary local locality that does not preserve true semantic meaning.
-        </div>
-        """,
-        unsafe_allow_html=True
-    )

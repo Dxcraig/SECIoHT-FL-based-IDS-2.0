@@ -12,6 +12,7 @@ from .config import (
     ATTACK_PRESETS,
     CLASS_NAMES
 )
+from .artifacts import MODEL_FILES, model_path
 from .models import DNN, CNN, softmax, TORCH_AVAILABLE
 
 if TORCH_AVAILABLE:
@@ -33,6 +34,21 @@ def load_model_weights(model_type: str = "dnn", filename: str = "best_dnn.pt"):
         except Exception:
             pass
     return model
+
+
+def _checkpoint_for_choice(model_choice: str):
+    """Resolve legacy page labels to the notebook-produced checkpoints."""
+    if "CNN" in model_choice:
+        return None
+    if "Centralized" in model_choice:
+        return "Centralized DNN"
+    if "Noise=0.5" in model_choice:
+        return "Federated DNN + DP (noise=0.5)"
+    if "Noise=1.5" in model_choice:
+        return "Federated DNN + DP (noise=1.5)"
+    if "Federated" in model_choice:
+        return "Federated DNN"
+    return None
 
 
 def predict_sample(
@@ -96,29 +112,38 @@ def predict_sample(
         anomaly_score += 0.20
         anomaly_reasons.append(f"Suspicious Edge Service Port ({int(raw_sport)})")
 
-    # 3. Model Inference: Use trained baseline MLP if available, else PyTorch or calibrated score
+    # 3. Model inference: prefer the exact checkpoint produced by the notebook.
     p_attack = 0.0
-    mlp_path = MODELS_DIR / "baseline_mlp.joblib"
+    inference_source = "No trained model artifact available"
+    checkpoint_label = _checkpoint_for_choice(model_choice)
+    checkpoint = model_path(checkpoint_label) if checkpoint_label else None
 
-    if mlp_path.exists():
+    if checkpoint and checkpoint.exists() and TORCH_AVAILABLE:
         try:
-            import joblib
-            mlp_model = joblib.load(mlp_path)
-            probs = mlp_model.predict_proba(scaled_vector)[0]
-            base_p = float(probs[1])
-
-            # Apply slight architectural variance for comparison
-            if "CNN" in model_choice:
-                p_attack = min(0.99, max(0.01, base_p - 0.08))
-            elif "Noise=0.5" in model_choice:
-                p_attack = min(0.99, max(0.01, base_p * 0.85 + 0.05))
-            elif "Noise=1.5" in model_choice:
-                p_attack = min(0.99, max(0.01, base_p * 0.95))
-            else:
-                p_attack = base_p
+            model = DNN(36)
+            state_dict = torch.load(checkpoint, map_location="cpu", weights_only=True)
+            model.load_state_dict(state_dict)
+            model.eval()
+            with torch.no_grad():
+                tensor_in = torch.tensor(scaled_vector, dtype=torch.float32)
+                probs = torch.softmax(model(tensor_in), dim=1).numpy()[0]
+            p_attack = float(probs[1])
+            inference_source = f"Notebook checkpoint: {checkpoint.name}"
         except Exception:
-            p_attack = min(0.99, max(0.01, anomaly_score))
-    elif TORCH_AVAILABLE and (MODELS_DIR / "best_dnn.pt").exists():
+            inference_source = f"Checkpoint failed to load: {checkpoint.name}"
+
+    if inference_source == "No trained model artifact available" and "CNN" not in model_choice:
+        mlp_path = MODELS_DIR / "baseline_mlp.joblib"
+        if mlp_path.exists():
+            try:
+                import joblib
+                mlp_model = joblib.load(mlp_path)
+                p_attack = float(mlp_model.predict_proba(scaled_vector)[0][1])
+                inference_source = "Bundled baseline MLP fallback (not the notebook checkpoint)"
+            except Exception:
+                inference_source = "Bundled baseline model failed to load"
+
+    if inference_source == "No trained model artifact available" and "CNN" not in model_choice and TORCH_AVAILABLE and (MODELS_DIR / "best_dnn.pt").exists():
         try:
             model = load_model_weights("dnn", "best_dnn.pt")
             with torch.no_grad():
@@ -126,10 +151,13 @@ def predict_sample(
                 logits = model(tensor_in).numpy()
                 probs = softmax(logits)[0]
                 p_attack = float(probs[1])
+            inference_source = "Legacy best_dnn.pt fallback"
         except Exception:
-            p_attack = min(0.99, max(0.01, anomaly_score))
-    else:
-        # Fallback calibrated score
+            inference_source = "Legacy model failed to load"
+
+    if inference_source.endswith("failed to load"):
+        p_attack = min(0.99, max(0.01, anomaly_score))
+    elif inference_source == "No trained model artifact available":
         p_attack = min(0.99, max(0.01, anomaly_score))
 
     p_normal = 1.0 - p_attack
@@ -142,5 +170,6 @@ def predict_sample(
         "normal_probability": p_normal,
         "confidence": max(p_attack, p_normal) * 100.0,
         "is_attack": pred_label == 1,
+        "inference_source": inference_source,
         "anomaly_factors": anomaly_reasons if anomaly_reasons else ["Telemetry within normal medical & network bounds"]
     }

@@ -17,7 +17,7 @@ if str(APP_DIR) not in sys.path:
     sys.path.insert(0, str(APP_DIR))
 
 from components.sidebar import render_sidebar
-from src.federated import simulate_fl_rounds, calculate_dp_epsilon
+from src.artifacts import result_path
 
 # Page Setup
 st.set_page_config(page_title="FL and Privacy Lab | SECIoHT-FL", layout="wide")
@@ -64,7 +64,8 @@ with col_ctrl:
         """
     )
 
-    run_sim = st.button("Run Federated Simulation", type="primary", use_container_width=True)
+    st.caption("Training runs in the notebook. This page only replays exported artifacts.")
+    run_sim = False
 
 with col_info:
     st.subheader("Methodology: Local DP and Persistent Accounting")
@@ -182,35 +183,16 @@ if run_sim:
 
 else:
     # Default visual view before running
-    st.info("Click 'Run Federated Simulation' above to trigger real-time multi-client FedAvg and Opacus DP-SGD aggregation.")
-    
-    # Pre-calculated standard comparison curve across all 100 communication rounds
-    demo_rounds = list(range(1, 101))
-    
-    # 100-round trajectory converging to paper's reported values
-    # Noise=1.5 reaches 93.2%
-    # No DP reaches 91.5%
-    # Noise=0.5 plateaus around 68.0%
-    acc_no_dp = [round(52.0 + (91.5 - 52.0) * (1.0 - np.exp(-0.045 * r)), 2) for r in demo_rounds]
-    acc_dp_1_5 = [round(50.0 + (93.2 - 50.0) * (1.0 - np.exp(-0.038 * r)), 2) for r in demo_rounds]
-    acc_dp_0_5 = [round(48.0 + (68.0 - 48.0) * (1.0 - np.exp(-0.025 * r)), 2) for r in demo_rounds]
-
-    demo_df = pd.DataFrame({
-        "Round": demo_rounds,
-        "No DP Accuracy (%)": acc_no_dp,
-        "DP Noise=1.5 Accuracy (%) [Paper Reported 93.2%]": acc_dp_1_5,
-        "DP Noise=0.5 Accuracy (%) [Paper Degraded]": acc_dp_0_5
-    })
-    
-    fig_comp = px.line(
-        demo_df,
-        x="Round",
-        y=[
-            "No DP Accuracy (%)",
-            "DP Noise=1.5 Accuracy (%) [Paper Reported 93.2%]",
-            "DP Noise=0.5 Accuracy (%) [Paper Degraded]"
-        ],
-        title="Privacy-Utility Trade-off: Accuracy Curves across 100 Communication Rounds",
-        labels={"value": "Test Accuracy (%)", "variable": "Privacy Setting"}
-    )
-    st.plotly_chart(fig_comp, use_container_width=True)
+    stage3_log = result_path("stage3").with_name("stage3_round_log.csv")
+    stage4_log = result_path("stage4").with_name("stage4_round_log.csv")
+    if stage3_log.exists() or stage4_log.exists():
+        st.subheader("Recorded training history")
+        log_path = stage3_log if stage3_log.exists() else stage4_log
+        log_df = pd.read_csv(log_path)
+        st.line_chart(log_df.set_index("round"))
+        st.caption(f"Loaded from `{log_path.name}` produced by the notebook run.")
+    else:
+        st.warning(
+            "No per-round training log is available yet. Run the notebook's Stage 3 and Stage 4 cells "
+            "and copy their round logs into streamlit_app/artifacts/results/."
+        )

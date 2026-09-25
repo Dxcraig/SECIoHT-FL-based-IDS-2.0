@@ -341,6 +341,7 @@ with col_badge:
     st.markdown(f"**Classification**: `{result['prediction_name']}`")
     st.markdown(f"**Decision Confidence**: `{result['confidence']:.1f}%`")
     st.markdown(f"**Evaluated by**: `{active_model}`")
+    st.caption(f"Inference source: {result['inference_source']}")
 
     st.markdown("#### Detected Diagnostic Factors:")
     for f in result["anomaly_factors"]:
