@@ -63,7 +63,7 @@ def compute_feature_contributions(
             "Feature": col,
             "Value": round(float(val), 2),
             "SHAP_Value": round(float(score), 4),
-            "Impact": "Pushes towards Attack 🚨" if score > 0 else "Pushes towards Normal 🟢"
+            "Impact": "Pushes towards Attack" if score > 0 else "Pushes towards Normal"
         })
 
     df = pd.DataFrame(contributions)
