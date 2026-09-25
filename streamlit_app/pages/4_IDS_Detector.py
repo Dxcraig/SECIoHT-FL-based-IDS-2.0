@@ -58,12 +58,14 @@ default_values = {
     "pkts": 16,
     "bytes": 1950,
     "srate": 12.5,
-    "source_description": "Manual Input"
+    "source_description": "Manual Input",
+    "ground_truth": None
 }
 
 for k, v in default_values.items():
     if f"telemetry_{k}" not in st.session_state:
         st.session_state[f"telemetry_{k}"] = v
+
 
 # Section 1: Input Control Center (Presets vs Test Set Sampler)
 st.subheader("1. Telemetry Source and Scenario Setup")
@@ -128,10 +130,12 @@ with tab_sampler:
             st.session_state["telemetry_pkts"] = int(chosen_row["TotPkts"])
             st.session_state["telemetry_bytes"] = int(chosen_row["TotBytes"])
             st.session_state["telemetry_srate"] = float(chosen_row["sRate"])
+            st.session_state["telemetry_ground_truth"] = int(chosen_row["Label"])
             st.session_state["telemetry_source_description"] = (
                 f"Loaded Test Sample: {selected_id} (Ground Truth: {'Attack' if chosen_row['Label'] == 1 else 'Normal'})"
             )
             st.rerun()
+
 
     with col_sample_summary:
         true_label_text = "Attack / Malicious Traffic (1)" if chosen_row["Label"] == 1 else "Normal Medical Traffic (0)"
@@ -167,8 +171,10 @@ with tab_presets:
             st.session_state["telemetry_pkts"] = int(p_net["TotPkts"])
             st.session_state["telemetry_bytes"] = int(p_net["TotBytes"])
             st.session_state["telemetry_srate"] = float(p_net["sRate"])
+            st.session_state["telemetry_ground_truth"] = int(preset_info["label"])
             st.session_state["telemetry_source_description"] = f"Preset: {preset_name}"
             st.rerun()
+
 
 st.markdown("---")
 
@@ -181,12 +187,14 @@ with col_m_select:
     active_model = st.selectbox(
         "Active IDS Defense Model for Diagnosis:",
         [
-            "Centralized DNN (Replication Baseline)",
-            "Centralized CNN (Replication Baseline)",
-            "Federated DNN (FedAvg No DP)",
-            "Federated DNN + DP (Opacus Noise=1.5)"
+            "Centralized DNN (Stage 2 Baseline)",
+            "Centralized CNN (Stage 2 Baseline)",
+            "Federated DNN (FedAvg No DP 100 by 1)",
+            "Federated DNN + DP (Noise=1.5 100 by 1)",
+            "Federated DNN + DP (Noise=0.5 100 by 1)"
         ]
     )
+
 
 col_vitals, col_net = st.columns(2)
 
@@ -346,6 +354,27 @@ with col_badge:
     st.markdown("#### Detected Diagnostic Factors:")
     for f in result["anomaly_factors"]:
         st.markdown(f"- {f}")
+
+    gt = st.session_state.get("telemetry_ground_truth")
+    if gt is not None:
+        st.markdown("#### Ground Truth Verification:")
+        if result["prediction_label"] == gt:
+            if gt == 1:
+                st.success("True Positive: Malicious intrusion correctly identified.")
+            else:
+                st.success("True Negative: Benign patient telemetry correctly verified.")
+        else:
+            if gt == 1:
+                st.error(
+                    f"False Negative (Missed Attack): Ground truth is Attack (1), but {active_model} "
+                    f"classified it as Normal (0). This demonstrates the 0.49% recall vulnerability under 10^-4 DP clipping."
+                )
+            else:
+                st.warning(
+                    f"False Positive (False Alarm): Ground truth is Normal (0), but {active_model} "
+                    f"flagged it as an Attack (1)."
+                )
+
 
 with col_gauge:
     fig_gauge = go.Figure(go.Indicator(

@@ -37,18 +37,19 @@ def load_model_weights(model_type: str = "dnn", filename: str = "best_dnn.pt"):
 
 
 def _checkpoint_for_choice(model_choice: str):
-    """Resolve legacy page labels to the notebook-produced checkpoints."""
+    """Resolve user-selected model labels to the notebook-produced checkpoints."""
     if "CNN" in model_choice:
         return None
-    if "Centralized" in model_choice:
-        return "Centralized DNN"
-    if "Noise=0.5" in model_choice:
+    if "0.5" in model_choice:
         return "Federated DNN + DP (noise=0.5)"
-    if "Noise=1.5" in model_choice:
+    if "1.5" in model_choice:
         return "Federated DNN + DP (noise=1.5)"
     if "Federated" in model_choice:
         return "Federated DNN"
+    if "Centralized" in model_choice:
+        return "Centralized DNN"
     return None
+
 
 
 def predict_sample(
