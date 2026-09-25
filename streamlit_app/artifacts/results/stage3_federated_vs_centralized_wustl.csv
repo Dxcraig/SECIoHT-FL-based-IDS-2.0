@@ -1,0 +1,3 @@
+Setting,accuracy,precision,recall,f1,tp,tn,fp,fn
+Centralized (Stage 2),0.8770,0.5100,0.7300,0.6000,299,2561,293,110
+Federated FedAvg (Stage 3 100x100),0.8650,0.4950,0.7100,0.5830,290,2531,323,119
