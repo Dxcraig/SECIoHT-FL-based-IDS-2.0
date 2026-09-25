@@ -45,8 +45,9 @@ our_work/*.png
 .agents/
 .claude/
 tests/
-FL-DP-WUSTL.ipynb
-requirements.txt
+# requirements.txt is needed for Streamlit Cloud deployment
+!streamlit_app/requirements.txt
+!requirements.txt
 pytest.ini
 .flake8
 .isortrc
