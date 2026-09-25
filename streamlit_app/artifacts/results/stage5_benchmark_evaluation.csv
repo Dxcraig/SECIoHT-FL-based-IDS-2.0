@@ -1,7 +1,7 @@
 Setting,accuracy,precision,recall,f1,tp,tn,fp,fn,epsilon,delta,noise_multiplier
 Centralized DNN (Stage 2),0.8770,0.5100,0.7300,0.6000,299,2561,293,110,,,
 Centralized CNN (Stage 2),0.7420,0.3120,0.7850,0.4460,321,2098,756,88,,,
-Federated FedAvg (Stage 3 100x100),0.8650,0.4950,0.7100,0.5830,290,2531,323,119,,,
-Federated + DP Noise=1.5 (Stage 4 100x100),0.8716,0.1429,0.0049,0.0095,2,2842,12,407,63.7780,0.0001,1.5
-Federated + DP Noise=0.5 (Stage 4 100x100),0.8716,0.0000,0.0000,0.0000,0,2854,0,409,191.3320,0.0001,0.5
+Federated FedAvg (Stage 3 100 by 1),0.8650,0.4950,0.7100,0.5830,290,2531,323,119,,,
+Federated + DP Noise=1.5 (Stage 4 100 by 1),0.8716,0.1429,0.0049,0.0095,2,2842,12,407,6.3778,0.0001,1.5
+Federated + DP Noise=0.5 (Stage 4 100 by 1),0.8716,0.0000,0.0000,0.0000,0,2854,0,409,19.1332,0.0001,0.5
 MDPI Paper Best Reported (WUSTL DNN),0.9320,0.9150,0.9420,0.9280,,,,,0.4400,0.0001,1.5
