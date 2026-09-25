@@ -1,0 +1,90 @@
+/* Modern Cybersecurity & Healthcare IoHT Theme */
+
+/* Header & Subtitle */
+.main-header {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.2rem;
+}
+
+.sub-header {
+    font-size: 1.05rem;
+    color: #64748b;
+    margin-bottom: 1.5rem;
+}
+
+/* Status Badges */
+.badge-normal {
+    display: inline-block;
+    padding: 0.35rem 0.85rem;
+    background-color: #dcfce7;
+    color: #15803d;
+    font-weight: 600;
+    border-radius: 9999px;
+    border: 1px solid #86efac;
+    font-size: 0.9rem;
+}
+
+.badge-alert {
+    display: inline-block;
+    padding: 0.35rem 0.85rem;
+    background-color: #fee2e2;
+    color: #b91c1c;
+    font-weight: 600;
+    border-radius: 9999px;
+    border: 1px solid #fca5a5;
+    font-size: 0.9rem;
+}
+
+/* Metric KPI Card */
+.metric-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.2rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1rem;
+    transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.metric-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.metric-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-top: 0.3rem;
+}
+
+/* Callout Box */
+.info-box {
+    background-color: #f8fafc;
+    border-left: 4px solid #0284c7;
+    padding: 1rem 1.25rem;
+    border-radius: 0 8px 8px 0;
+    margin: 1rem 0;
+    font-size: 0.92rem;
+    color: #334155;
+}
+
+.warning-box {
+    background-color: #fffbeb;
+    border-left: 4px solid #f59e0b;
+    padding: 1rem 1.25rem;
+    border-radius: 0 8px 8px 0;
+    margin: 1rem 0;
+    font-size: 0.92rem;
+    color: #92400e;
+}

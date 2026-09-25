@@ -42,7 +42,8 @@ our_work/*.png
 # Original scaffold project (src/, tests/, CI, tooling configs, the paper
 # authors' raw notebook) -- intentionally not part of this repo going
 # forward. Recoverable from git history (see README.md) if ever needed.
-src/
+.agents/
+.claude/
 tests/
 FL-DP-WUSTL.ipynb
 requirements.txt

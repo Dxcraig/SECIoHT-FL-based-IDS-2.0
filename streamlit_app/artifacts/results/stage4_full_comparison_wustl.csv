@@ -1,0 +1,7 @@
+Setting,Accuracy,Precision,Recall,F1-Score,Privacy (Epsilon),Status
+Centralized DNN (Replication Baseline),0.877,0.510,0.730,0.600,None (Centralized),Verified Local Run
+Centralized CNN (Replication Baseline),0.702,0.270,0.800,0.400,None (Centralized),Verified Local Run
+Federated DNN (FedAvg No DP),0.865,0.495,0.710,0.583,Federated Only,Simulated Shards
+Federated DNN + DP (Opacus Noise=1.5),0.832,0.460,0.680,0.548,0.44 (Strong Guarantee),Recommended DP
+Federated DNN + DP (Opacus Noise=0.5),0.781,0.380,0.610,0.468,1.82 (Moderate Guarantee),Degraded Noise
+MDPI Paper Reported (WUSTL DNN Noise=1.5),0.932,0.915,0.942,0.928,0.44,Original Paper Baseline
