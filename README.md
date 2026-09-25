@@ -120,10 +120,14 @@ The notebook is fully linear — no hidden dependency on cells run out of order.
 | Federated DNN + DP, noise=0.5 (Stage 4) | *pending Colab run* | | | | *pending* |
 | Paper's reported best (WUSTL, DNN, noise=1.5) | 93.2% | — | — | — | 0.44 |
 
-## Next steps
+## Stages implemented in the notebook
 
-- **Stage 5 — Formal evaluation**: mostly presentation of Stage 4's comparison table in the paper's own results format, once real numbers are in from a Colab run.
-- **Stage 6 — SHAP explainability**: run SHAP against the best-performing model to identify which of the 36 WUSTL features drive its predictions (paper's own top features: flow duration, source port, temperature, pulse rate).
+- **Stage 1 — Preprocessing & Data Cleaning**: Drop 8 non-predictive/leaky columns, fix `Sport` mixed types, and park ECU-IoHT.
+- **Stage 2 — Model Building & Centralized Baseline**: Stratified 80/20 split before SMOTE, training DNN (100 epochs) and CNN (100 epochs) baselines.
+- **Stage 3 — Federated Learning (FedAvg)**: 3 simulated hospital edge clients exchanging model weights over 100 communication rounds (100 local epochs per client).
+- **Stage 4 — Differential Privacy (Opacus DP-SGD)**: Persistent `DPClient` accounting with noise multipliers 1.5 and 0.5 over 100 rounds.
+- **Stage 5 — Formal Evaluation & Visualizations**: Complete evaluation comparison table matching MDPI benchmark format, performance metrics bar charts, and confusion matrix heatmaps (`stage5_benchmark_evaluation.csv`, `stage5_evaluation_plots.png`).
+- **Stage 6 — Model Explainability (SHAP)**: KernelExplainer computing global feature attribution rankings, summary beeswarm plots, and local instance waterfall explanations (`stage6_shap_summary.png`, `stage6_feature_importance.csv`, `stage6_local_waterfall_attack.png`).
 
 ## Algorithms used
 
